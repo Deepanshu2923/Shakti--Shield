@@ -58,9 +58,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// ✅ Connect DB
-ConnectDb();
-
 // ✅ Routes
 app.use("/api/user", UserRoutes);
 app.use("/api/contacts", ContactRoutes);
@@ -89,8 +86,12 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ✅ Start server
+// ✅ Start server (connect DB first)
 const PORT = process.env.PORT || 5000;
+const started = await ConnectDb();
+if (!started) {
+  console.error("\nFix: start MongoDB locally or put a valid MONGO_URI in server/.env\n");
+}
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });

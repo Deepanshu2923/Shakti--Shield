@@ -14,11 +14,15 @@ import axios from "axios";
  * @param {file} photo - (Optional) Contact photo
  */
 const AddContact = async (req, res) => {
-  const { MobileNo, name, userId } = req.body;
+  const userId = req.user?.id;
+  const { MobileNo, name } = req.body;
 
-  // Validate required fields
-  if (!MobileNo || !name || !userId) {
-    return res.status(400).json({ message: "Please enter all required fields (name, MobileNo, userId)" });
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  if (!MobileNo || !name) {
+    return res.status(400).json({ message: "Please enter all required fields (name, MobileNo)" });
   }
 
   try {
@@ -72,11 +76,15 @@ const AddContact = async (req, res) => {
  * @query {string} contactId - ID of the contact to delete
  */
 const DeleteContact = async (req, res) => {
-  const { userId, contactId } = req.query;
+  const userId = req.user?.id;
+  const { contactId } = req.query;
 
-  // Validate query params
-  if (!userId || !contactId) {
-    return res.status(400).json({ message: "User ID and Contact ID are required" });
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  if (!contactId) {
+    return res.status(400).json({ message: "Contact ID is required" });
   }
 
   try {
@@ -122,6 +130,10 @@ const DeleteContact = async (req, res) => {
  * @param {object} location - { latitude: number, longitude: number }
  */
 const SendEmergencyInfo = async (req, res) => {
+  if (!req.user?.id) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
   const { contactNumbers, location } = req.body;
 
   if (!contactNumbers || !Array.isArray(contactNumbers) || contactNumbers.length === 0) {

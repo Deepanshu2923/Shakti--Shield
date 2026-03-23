@@ -12,10 +12,9 @@ const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);       // user profile data
   const [loading, setLoading] = useState(true); // auth checking in progress
 
-  // Fetch full user data by email
-  const fetchUserInfo = useCallback(async (email) => {
+  const fetchUserInfo = useCallback(async () => {
     try {
-      const { data } = await api.get(Config.GETDATAUrl, { params: { email } });
+      const { data } = await api.get(Config.GETDATAUrl);
       if (data) {
         localStorage.setItem("UserInfo", JSON.stringify(data));
         setUser(data);
@@ -31,7 +30,7 @@ const AuthContextProvider = ({ children }) => {
     try {
       const { data } = await api.get(Config.CHECKAuthUrl);
       if (data.authenticated) {
-        await fetchUserInfo(data.user.email);
+        await fetchUserInfo();
         setAuth(true);
       } else {
         logout(); // not authenticated → clear state

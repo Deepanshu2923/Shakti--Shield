@@ -33,7 +33,7 @@ function Reviews() {
     setIsLoading(true);
     try {
       const res = await api.post(Config.ADDREVIEWUrl, { 
-        ...data, userId: user._id 
+        ...data
       });
       if (res.status === 201) {
         setReviews(prev => [res.data.review, ...prev]);

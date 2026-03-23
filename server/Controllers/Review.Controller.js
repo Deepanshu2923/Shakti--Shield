@@ -2,11 +2,15 @@
 import User from "../Models/User.Model.js";
 
 const AddReview = async (req, res) => {
-    const { location, title, review, userId } = req.body
+    const userId = req.user?.id;
+    const { location, title, review } = req.body;
 
-    if (!location || !title || !review || !userId) {
+    if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    if (!location || !title || !review) {
         return res.status(400).json({ message: "All fields are required" });
-
     }
 
     try {
@@ -43,16 +47,14 @@ const AddReview = async (req, res) => {
 const GetAllReviews = async (req, res) => {
     try {
         
-        const users = await User.find({}, 'reviews username email');
+        const users = await User.find({}, 'reviews username');
 
-       
         const allReviews = users.flatMap(user =>
             user.reviews.map(review => ({
                 ...review.toObject(),
                 user: {
                     _id: user._id,
-                    username: user.username,
-                    email: user.email
+                    username: user.username
                 }
             }))
         );

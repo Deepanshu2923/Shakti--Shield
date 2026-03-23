@@ -5,11 +5,9 @@ import bcrypt from "bcryptjs";
 
 
 const AddProfilePhoto = async (req, res) => {
-    const { userId } = req.body;
-
-    
+    const userId = req.user?.id;
     if (!userId) {
-        return res.status(400).json({ message: "UserId not received" });
+        return res.status(401).json({ message: "Unauthorized" });
     }
 
     try {
@@ -33,7 +31,7 @@ const AddProfilePhoto = async (req, res) => {
             });
         } else {
             console.warn("No file provided, using default photo.");
-            photo = "https://via.placeholder.com/150";  L
+            photo = "https://via.placeholder.com/150";
         }
 
         
@@ -62,12 +60,13 @@ const AddProfilePhoto = async (req, res) => {
 
 const UpdateUsername = async (req, res) => {
     try {
-        const { userId, username } = req.body;
+        const userId = req.user?.id;
+        const { username } = req.body;
 
         if (!userId || !username) {
             return res.status(400).json({
                 success: false,
-                message: "Please provide userId and username"
+                message: "Please provide username"
             });
         }
 
@@ -111,13 +110,13 @@ const UpdateUsername = async (req, res) => {
 
 const UpdateEmail = async (req, res) => {
     try {
-        const { userId, email, isGoogleUser } = req.body;
+        const userId = req.user?.id;
+        const { email, isGoogleUser } = req.body;
 
-       
         if (!userId || !email) {
             return res.status(400).json({
                 success: false,
-                message: "Please provide userId and email"
+                message: "Please provide email"
             });
         }
         else if (isGoogleUser) {
@@ -167,13 +166,13 @@ const UpdateEmail = async (req, res) => {
 
 const UpdatePassword = async (req, res) => {
     try {
-        const { userId, currentPassword, newPassword } = req.body;
+        const userId = req.user?.id;
+        const { currentPassword, newPassword } = req.body;
 
-        
         if (!userId || !currentPassword || !newPassword) {
             return res.status(400).json({
                 success: false,
-                message: "Please provide all required fields"
+                message: "Please provide current and new password"
             });
         }
 

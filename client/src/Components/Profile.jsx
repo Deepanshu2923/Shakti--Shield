@@ -59,7 +59,6 @@ function Profile() {
     setIsUploading(true);
     try {
       const formData = new FormData();
-      formData.append('userId', user._id);
       formData.append('photo', data.photo[0]);
 
       const response = await api.post(Config.ADDPROFILEPHOTO, formData, {

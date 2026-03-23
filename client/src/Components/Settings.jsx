@@ -37,7 +37,6 @@ function Settings() {
     try {
       if (data.username) {
         const response = await api.post(Config.UPDATEUSERNAME, {
-          userId: user._id,
           username: data.username,
         });
   
@@ -49,7 +48,6 @@ function Settings() {
   
       if (data.email) {
         const response = await api.post(Config.UPDATEEMAIL, {
-          userId: user._id,
           email: data.email,
           isGoogleUser: user.isGoogleUser,
         });
@@ -67,10 +65,8 @@ function Settings() {
         }
   
         const response = await api.post(Config.UPDATEPASSWORD, {
-          userId: user._id,
           currentPassword: data.currentPassword,
           newPassword: data.newPassword,
-          isGoogleUser: user.isGoogleUser,
         });
   
         if (response.data.success) {

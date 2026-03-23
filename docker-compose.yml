@@ -1,0 +1,13 @@
+# Start MongoDB for local dev: docker compose up -d
+# Requires Docker Desktop running on Windows.
+services:
+  mongo:
+    image: mongo:7
+    container_name: shakti-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - shakti_mongo_data:/data/db
+
+volumes:
+  shakti_mongo_data:

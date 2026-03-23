@@ -7,7 +7,6 @@ import { AuthContext } from '../../Context/AuthContext';
 import api from '../../../URL/CustomApi';
 import { Config } from '../../../URL/Config';
 import Loader from './Loader';
-import axios from 'axios';
 import { toast } from "react-toastify"
 
 function AfterLogin() {
@@ -32,8 +31,6 @@ function AfterLogin() {
       contactData.append('photo', formData.photo[0]);
       contactData.append('name', formData.name);
       contactData.append('MobileNo', formData.MobileNo);
-      contactData.append('userId', user._id);
-
       const { data: responseData } = await api.post(
         Config.ContactUrl,
         contactData,
@@ -59,7 +56,7 @@ function AfterLogin() {
     setShowLoader(true);
     try {
       const response = await api.delete(Config.DELETECONTACTUrl, {
-        params: { userId: user._id, contactId },
+        params: { contactId },
       });
 
       if (response.status === 200) {

@@ -7,6 +7,7 @@ import {
   Logout, 
   Signup 
 } from "../Controllers/User.Controller.js";
+import { Authenticated } from "../Middlewares/auth.Middleware.js";
 
 const router = express.Router();
 
@@ -32,6 +33,6 @@ router.get("/auth-check", Authentication);
 
 // @route   GET /api/user/get-data
 // @desc    Get logged-in user's profile info
-router.get("/get-data", GetUserInfo);
+router.get("/get-data", Authenticated, GetUserInfo);
 
 export default router;

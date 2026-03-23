@@ -3,12 +3,20 @@ import bcrypt from "bcryptjs";
 import CreateToken from "../Utils/CreateToken.Utils.js";
 import { OAuth2Client } from 'google-auth-library';
 import jwt from "jsonwebtoken";
+import { assertDbConnected } from "../config/db.js";
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 /**
  * @desc    Register a new user (email + password signup)
  */
+const jwtCookieOptions = () => ({
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  maxAge: 30 * 24 * 60 * 60 * 1000
+});
+
 const Signup = async (req, res) => {
   const { username, email, password } = req.body;
 
@@ -16,6 +24,7 @@ const Signup = async (req, res) => {
   return res.status(400).json({ message: "Please provide a valid username, email, and password." });
 }
 
+  if (!assertDbConnected(res)) return;
 
   try {
     const emailExists = await User.findOne({ email });
@@ -36,12 +45,7 @@ const Signup = async (req, res) => {
 
     const token = CreateToken(newUser._id);
 
-    res.cookie("jwt", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
-      maxAge: 30 * 24 * 60 * 60 * 1000
-    }).status(201).json({
+    res.cookie("jwt", token, jwtCookieOptions()).status(201).json({
       _id: newUser._id,
       email: newUser.email,
       profilephoto: newUser.profilePhoto,
@@ -50,6 +54,9 @@ const Signup = async (req, res) => {
     });
   } catch (error) {
     console.error("Signup error:", error);
+    if (error.code === 11000) {
+      return res.status(409).json({ message: "Email already registered." });
+    }
     res.status(500).json({ message: "Server error during signup." });
   }
 };
@@ -59,6 +66,8 @@ const Signup = async (req, res) => {
  */
 const Login = async (req, res) => {
   const { email, password } = req.body;
+
+  if (!assertDbConnected(res)) return;
 
   try {
     const user = await User.findOne({ email });
@@ -76,12 +85,7 @@ const Login = async (req, res) => {
 
     const token = CreateToken(user._id);
 
-    res.cookie("jwt", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
-      maxAge: 30 * 24 * 60 * 60 * 1000
-    }).status(200).json({
+    res.cookie("jwt", token, jwtCookieOptions()).status(200).json({
       _id: user._id,
       email: user.email,
       profilephoto: user.profilePhoto,
@@ -101,7 +105,7 @@ const Logout = (req, res) => {
   res.cookie("jwt", "", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "none",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     expires: new Date(0)
   }).json({ message: "Logout successful." });
 };
@@ -111,6 +115,8 @@ const Logout = (req, res) => {
  */
 const GoogleAuthController = async (req, res) => {
   const { email, name, googleId, picture } = req.body;
+
+  if (!assertDbConnected(res)) return;
 
   try {
     let user = await User.findOne({ email });
@@ -137,12 +143,7 @@ const GoogleAuthController = async (req, res) => {
 
     const token = CreateToken(user._id);
 
-    res.cookie("jwt", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
-      maxAge: 30 * 24 * 60 * 60 * 1000
-    }).status(200).json({
+    res.cookie("jwt", token, jwtCookieOptions()).status(200).json({
       _id: user._id,
       email: user.email,
       profilephoto: user.profilePhoto,
@@ -166,6 +167,8 @@ const Authentication = async (req, res) => {
   }
 
   try {
+    if (!assertDbConnected(res)) return;
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id);
 
@@ -188,17 +191,13 @@ const Authentication = async (req, res) => {
 };
 
 /**
- * @desc    Get user details by email
+ * @desc    Get logged-in user profile (JWT required)
  */
 const GetUserInfo = async (req, res) => {
-  const { email } = req.query;
-
-  if (!email) {
-    return res.status(400).json({ message: "Email is required." });
-  }
-
   try {
-    const user = await User.findOne({ email });
+    if (!assertDbConnected(res)) return;
+
+    const user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }

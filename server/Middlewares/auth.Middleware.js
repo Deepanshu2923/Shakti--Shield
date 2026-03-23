@@ -22,12 +22,7 @@ const Authenticated = (req, res, next) => {
         // Verify the token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        // Attach user data to request for downstream use
-        req.user = {
-            id: decoded.id,
-            email: decoded.email,
-            username: decoded.username
-        };
+        req.user = { id: decoded.id };
 
         // Call the next middleware or route handler
         next();

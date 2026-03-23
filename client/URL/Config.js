@@ -1,19 +1,21 @@
+const API = import.meta.env.VITE_API_BASE ?? "";
+
 export const Config = {
-  baseUrl: "https://shakti-shield-1.onrender.com/api/user",
-  SignUPUrl: "https://shakti-shield-1.onrender.com/api/user/signup",
-  LOGINUrl: "https://shakti-shield-1.onrender.com/api/user/login",
-  GoogleClientId: "60025884553-nj9828bafm1j5gmosermiu2h2clngui9.apps.googleusercontent.com",
-  GoogleSignUpUrl: "https://shakti-shield-1.onrender.com/api/user/googleLogin",
-  LogoutUrl: "https://shakti-shield-1.onrender.com/api/user/logout",
-  ContactUrl: "https://shakti-shield-1.onrender.com/api/contacts/addcontact",
-  GETDATAUrl: "https://shakti-shield-1.onrender.com/api/user/get-data",
-  CHECKAuthUrl: "https://shakti-shield-1.onrender.com/api/user/auth-check",
-  DELETECONTACTUrl: "https://shakti-shield-1.onrender.com/api/contacts/delete-contact",
-  EMERGENCYUrl: "https://shakti-shield-1.onrender.com/api/contacts/emergency",
-  ADDREVIEWUrl: "https://shakti-shield-1.onrender.com/api/reviews/addreview",
-  GETREVIEWSUrl: "hhttps://shakti-shield-1.onrender.com/api/reviews/allreviews",
-  ADDPROFILEPHOTO: "https://shakti-shield-1.onrender.com/api/profile/add-photo",
-  UPDATEUSERNAME: "https://shakti-shield-1.onrender.com/api/profile/update-name",
-  UPDATEEMAIL: "https://shakti-shield-1.onrender.com/api/profile/update-email",
-  UPDATEPASSWORD: "https://shakti-shield-1.onrender.com/api/profile/update-password"
-}
+  baseUrl: `${API}/api/user`,
+  SignUPUrl: `${API}/api/user/signup`,
+  LOGINUrl: `${API}/api/user/login`,
+  GoogleClientId: import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "60025884553-nj9828bafm1j5gmosermiu2h2clngui9.apps.googleusercontent.com",
+  GoogleSignUpUrl: `${API}/api/user/googleLogin`,
+  LogoutUrl: `${API}/api/user/logout`,
+  ContactUrl: `${API}/api/contacts/addcontact`,
+  GETDATAUrl: `${API}/api/user/get-data`,
+  CHECKAuthUrl: `${API}/api/user/auth-check`,
+  DELETECONTACTUrl: `${API}/api/contacts/delete-contact`,
+  EMERGENCYUrl: `${API}/api/contacts/emergency`,
+  ADDREVIEWUrl: `${API}/api/reviews/addreview`,
+  GETREVIEWSUrl: `${API}/api/reviews/allreviews`,
+  ADDPROFILEPHOTO: `${API}/api/profile/add-photo`,
+  UPDATEUSERNAME: `${API}/api/profile/update-name`,
+  UPDATEEMAIL: `${API}/api/profile/update-email`,
+  UPDATEPASSWORD: `${API}/api/profile/update-password`
+};
